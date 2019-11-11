@@ -22,6 +22,30 @@ export class F450 {
     return this.motor4;
   }
 
+  public async Init(): Promise<void> {
+    await Promise.all([
+      this.Motor1.Init(),
+      this.Motor2.Init(),
+      this.Motor3.Init(),
+      this.Motor4.Init()
+    ]);
+  }
+
+  // 设置全部电机档位（0 ~ 10）
+  public GearSet(gear: number): void {
+    this.Motor1.GearSet(gear);
+    this.Motor2.GearSet(gear);
+    this.Motor3.GearSet(gear);
+    this.Motor4.GearSet(gear);
+  }
+  // 临时设置全部电机档位并持续一段时间（多用于调试）
+  public GearSetTimeout(gear: number, s: number) {
+    this.Motor1.GearSetTimeout(gear, s);
+    this.Motor2.GearSetTimeout(gear, s);
+    this.Motor3.GearSetTimeout(gear, s);
+    this.Motor4.GearSetTimeout(gear, s);
+  }
+
   public constructor() {
     this.motor1 = new Motor(GPIO.GPIO0);
     this.motor2 = new Motor(GPIO.GPIO2);

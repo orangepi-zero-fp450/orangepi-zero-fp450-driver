@@ -1,10 +1,11 @@
 import { GPIO } from "../gpio";
 
-// 电机类（封装了电机控制方法以及电调初始化方法）
+// 电机类
+// 封装了电机状态，电机控制方法，电调初始化方法
 export class Motor {
   // 控制电机的GPIO口
   private gpio: GPIO;
-  // PWM时钟是否初始化标志
+  // PWM是否初始化标志
   private pwmInitialized: boolean;
   // 电调是否初始化标志
   private controllerInitialized: boolean;
@@ -15,7 +16,7 @@ export class Motor {
   public get GPIO(): GPIO {
     return this.gpio;
   }
-  // 获取PWM时钟初始化状态
+  // 获取PWM初始化状态
   public get PWMInitialized() {
     return this.pwmInitialized;
   }
@@ -23,18 +24,18 @@ export class Motor {
   public get ControllerInitialized() {
     return this.controllerInitialized;
   }
-  // 获取总的电机初始化状态
+  // 获取总的电机初始化状态（PWM且电调）
   public get Initialized() {
     return this.PWMInitialized && this.ControllerInit;
   }
-  // 获取当前档位
+  // 获取电机当前档位
   public get Gear(): number {
     return this.gear;
   }
 
-  // 初始化PWM时钟（这是一个底层的方法）
-  private pwmTimerInit(min: number = 0, max: number = 200) {
-    console.log(`pwmTimerInit: ${min} ${max}`);
+  // 初始化PWM（这是一个底层的方法）
+  private pwmInit(min: number = 0, max: number = 200) {
+    console.log(`pwmInit: ${min} ${max}`);
   }
   // 设置脉冲（这是一个底层的方法）
   private pulseSet(value: number) {
@@ -46,41 +47,41 @@ export class Motor {
     console.log(`pulseSet: ${value}`);
   }
 
-  // 初始化PWM时钟
+  // 初始化PWM
   public PWMInit(): void {
-    if (!this.pwmInitialized) {
-      this.pwmTimerInit();
+    if (!this.PWMInitialized) {
+      this.pwmInit();
       this.pwmInitialized = true;
     } else {
       console.log('pwm already initialized');
     }
   }
-  // 初始化电调
+  // 初始化电调（这是一个异步方法）
   public ControllerInit(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      if (!this.pwmInitialized) {
+      if (!this.PWMInitialized) {
         reject('pwm not initialized');
       }
-      if (!this.controllerInitialized) {
+      if (!this.ControllerInitialized) {
         this.pulseSet(20);
         setTimeout(() => {
           this.pulseSet(10);
           this.controllerInitialized = true;
           resolve();
-        }, 3000);
+        }, 2500);
       } else {
         console.log('controller already initialized');
         resolve();
       }
     });
   }
-  // 初始化电机（包含PWM时钟与电调）
+  // 初始化电机（包含PWM与电调）
   public async Init(): Promise<void> {
     this.PWMInit();
     await this.ControllerInit();
   }
   // 设置电机档位（0 ~ 10）
-  public GearSet(gear: number) {
+  public GearSet(gear: number): void {
     if (!this.PWMInit) {
       console.log('pwm not initialized');
       return;
@@ -102,15 +103,15 @@ export class Motor {
   }
   // 临时设置电机档位并持续一段时间（多用于调试）
   public GearSetTimeout(gear: number, s: number) {
-    const ms = Math.floor(s * 1000);
     const bakGear = this.gear;
     this.GearSet(gear);
+    const ms = Math.floor(s * 1000);
     setTimeout(() => {
       this.GearSet(bakGear);
     }, ms);
   }
 
-  // 构造函数
+  // 构造函数（传入控制电机的GPIO口）
   public constructor(gpio: GPIO) {
     this.gpio = gpio;
     this.pwmInitialized = false;
