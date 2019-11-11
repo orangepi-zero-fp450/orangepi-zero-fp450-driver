@@ -1,4 +1,3 @@
-
 import { Motor } from '../motor';
 import { GPIO } from '../gpio';
 
