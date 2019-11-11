@@ -26,7 +26,7 @@ export class Motor {
   }
   // 获取总的电机初始化状态（PWM且电调）
   public get Initialized() {
-    return this.PWMInitialized && this.ControllerInit;
+    return this.PWMInitialized && this.ControllerInitialized;
   }
   // 获取电机当前档位
   public get Gear(): number {
@@ -102,13 +102,16 @@ export class Motor {
     this.gear = floorGear;
   }
   // 临时设置电机档位并持续一段时间（多用于调试）
-  public GearSetTimeout(gear: number, s: number) {
-    const bakGear = this.gear;
-    this.GearSet(gear);
-    const ms = Math.floor(s * 1000);
-    setTimeout(() => {
-      this.GearSet(bakGear);
-    }, ms);
+  public GearSetTimeout(gear: number, s: number): Promise<void> {
+    return new Promise<void>((resolve) => {
+      const ms = Math.floor(s * 1000);
+      const bakGear = this.gear;
+      this.GearSet(gear);
+      setTimeout(() => {
+        this.GearSet(bakGear);
+        resolve();
+      }, ms);
+    });
   }
 
   // 构造函数（传入控制电机的GPIO口）
