@@ -69,8 +69,10 @@ export class Motor {
         this.pulseSet(20);
         setTimeout(() => {
           this.pulseSet(10);
-          this.controllerInitialized = true;
-          resolve();
+          setTimeout(() => {
+            this.controllerInitialized = true;
+            resolve();
+          }, 8000);
         }, 2500);
       } else {
         console.log('controller already initialized');
