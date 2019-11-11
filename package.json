@@ -12,6 +12,7 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
+    "@types/colors": "^1.2.1",
     "@types/ffi": "^0.2.2",
     "colors": "^1.4.0",
     "ffi": "^2.3.0"

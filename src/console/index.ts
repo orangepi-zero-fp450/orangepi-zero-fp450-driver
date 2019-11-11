@@ -1,5 +1,5 @@
-import colors from 'colors';
 import readline from 'readline';
+import 'colors';
 
 export class Console {
   // readline模块
@@ -25,25 +25,31 @@ export class Console {
   }
 
   // 选择设备命令
-  private selectCommand(name: string) {
-    if (name) {
-      const devMap: any = {
-        'gpio0': 'gpio0',
-        'gpio2': 'gpio2',
-        'gpio3': 'gpio3',
-        'gpio7': 'gpio7',
-        'gpioall': 'gpioall',
-        '0': 'gpio0',
-        '2': 'gpio2',
-        '3': 'gpio3',
-        '7': 'gpio7',
-        'all': 'gpioall',
-        'mpu': 'mpu',
-      };
-      if (devMap[name]) {
-        this.curDevice = devMap[name];
+  private selectCommand(args: string[]) {
+    const sMap = {
+      '1': ['1'],
+      '2': ['2'],
+      '3': ['3'],
+      '4': ['4'],
+      'all': ['1', '2', '3', '4'],
+      '*u': ['1'],
+      '*d': ['4'],
+      '*l': ['3'],
+      '*r': ['2'],
+      '#u': ['1', '2'],
+      '#d': ['3', '4'],
+      '#l': ['1', '3'],
+      '#r': ['2', '4'],
+    };
+    if (args.length > 0) {
+      const allNum = args.every((arg) => isFinite(Number(arg)));
+      const allNotNum = args.every((arg) => !isFinite(Number(arg)));
+      if (allNum) {
+
+      } else if (allNotNum) {
+
       } else {
-        console.log(`device ${name} does not exist`);
+        console.log('不可混选设备');
       }
     } else {
       console.log('please select a device');
@@ -54,7 +60,7 @@ export class Console {
   private matchCommands(substrs: string[]) {
     const cmd = substrs[0];
     if (cmd === 'select') {
-      this.selectCommand(substrs[1]);
+      this.selectCommand(substrs.slice(1));
     } else if (cmd === 'init') {
 
     } else if (isFinite(Number(cmd))) {
@@ -65,11 +71,16 @@ export class Console {
   }
 
   public async Run(): Promise<void> {
-    console.log('[--------F430 Console v1.1--------]');
+    console.log(`${'[--------'.green}${` F450 Console v1.1 `.bgGreen.black}${'--------]'.green}`);
     while (true) {
       const input = (await Console.readline(`${this.curDevice ? `[${this.curDevice}]` : ''}>> `)).trim().toLowerCase();
       if (input) {
-        if (!input.startsWith('exit') && input !== 'e') {
+        if (
+          !input.startsWith('exit') &&
+          !input.startsWith('quit') &&
+          input !== 'e' &&
+          input !== 'q'
+        ) {
           const substrs = input.split(/\s+/);
           this.matchCommands(substrs);
         } else {

@@ -1,4 +1,5 @@
 import { GPIO } from "../gpio";
+import PWM from '../libpwm';
 
 // 电机类
 // 封装了电机状态，电机控制方法，电调初始化方法
@@ -36,6 +37,7 @@ export class Motor {
   // 初始化PWM（这是一个底层的方法）
   private pwmInit(min: number = 0, max: number = 200) {
     console.log(`pwmInit: ${min} ${max}`);
+    PWM.PWMInit(this.gpio, min, max);
   }
   // 设置脉冲（这是一个底层的方法）
   private pulseSet(value: number) {
@@ -45,6 +47,7 @@ export class Motor {
     }
     // 设置脉冲
     console.log(`pulseSet: ${value}`);
+    PWM.PWMSet(this.gpio, value);
   }
 
   // 初始化PWM

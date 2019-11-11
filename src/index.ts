@@ -11,9 +11,9 @@ async function main() {
   // await m.Init();
   const f450 = new F450();
   await f450.Init();
-  f450.GearSet(10);
-  await f450.GearSetTimeout(5, 5);
-  f450.Motor2.GearSet(2);
+  await f450.GearSetTimeout(1, 5);
+  await f450.GearSetTimeout(2, 5);
+  await f450.GearSetTimeout(1, 5);
 }
 
 main();
