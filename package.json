@@ -1,0 +1,18 @@
+{
+  "name": "orangepi-zero-fp450-driver",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "sudo node built/index.js",
+    "watch": "tsc -w"
+  },
+  "repository": "https://github.com/orangepi-zero-fp450/orangepi-zero-fp450-driver",
+  "author": "鸡毛 <shihao.gu@perfma.com>",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "@types/ffi": "^0.2.2",
+    "ffi": "^2.3.0"
+  }
+}
