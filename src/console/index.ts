@@ -32,14 +32,6 @@ export class Console {
       '3': ['3'],
       '4': ['4'],
       'all': ['1', '2', '3', '4'],
-      '*u': ['1'],
-      '*d': ['4'],
-      '*l': ['3'],
-      '*r': ['2'],
-      '#u': ['1', '2'],
-      '#d': ['3', '4'],
-      '#l': ['1', '3'],
-      '#r': ['2', '4'],
     };
     if (args.length > 0) {
       const allNum = args.every((arg) => isFinite(Number(arg)));
@@ -90,5 +82,20 @@ export class Console {
     }
   }
 
-  public constructor() {}
+  /**
+   * Add方法，实现两个number相加
+   * @public
+   * @param {number} num1 - 第一个数字
+   * @param {number} num2 - 第二个数字
+   * @returns {number} 两个数的和
+   * @deprecated 你还是别用这个方法了吧
+   * @author 鸡毛巾 <shihao.gu@perfma.com>
+  */
+  public add(num1: number, num2: number): number {
+    return num1 + num2;
+  }
+
+  public constructor() {
+    const a = this.add
+  }
 }

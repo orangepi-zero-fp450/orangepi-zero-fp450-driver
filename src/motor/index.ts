@@ -72,7 +72,7 @@ export class Motor {
           setTimeout(() => {
             this.controllerInitialized = true;
             resolve();
-          }, 8000);
+          }, 7500);
         }, 2500);
       } else {
         console.log('controller already initialized');
