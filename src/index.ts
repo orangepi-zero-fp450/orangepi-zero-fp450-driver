@@ -16,7 +16,7 @@ async function main() {
   await f450.GearSetTimeout(1, 5);
   await f450.GearSetTimeout(2, 4);
   await f450.GearSetTimeout(3, 3);
-  await f450.GearSetTimeout(4, 0.5);
+  await f450.GearSetTimeout(5, 0.2);
   f450.GearSet(0);
 }
 
