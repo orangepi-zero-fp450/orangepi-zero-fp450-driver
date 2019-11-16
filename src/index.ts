@@ -12,19 +12,9 @@ async function main() {
   console.log('所有电机初始化完成');
   await f450.GearSetTimeout(1, 10);
   await f450.GearSetTimeout(2, 10);
-  await f450.GearSetTimeout(1, 10);
-  await f450.GearSetTimeout(2, 10);
-  await f450.GearSetTimeout(1, 10);
-  await f450.GearSetTimeout(2, 10);
-  await f450.GearSetTimeout(1, 10);
-  await f450.GearSetTimeout(2, 10);
-  await f450.GearSetTimeout(0, 10);
-  await f450.GearSetTimeout(1, 5);
-  await f450.GearSetTimeout(2, 5);
-  await f450.GearSetTimeout(3, 5);
-  await f450.GearSetTimeout(2, 5);
-  await f450.GearSetTimeout(1, 5);
-  await f450.GearSetTimeout(0, 10);
+  await f450.GearSetTimeout(3, 3);
+  await f450.GearSetTimeout(4, 1);
+  f450.GearSet(0);
 }
 
 main();
