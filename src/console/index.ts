@@ -26,23 +26,31 @@ export class Console {
 
   // 选择设备命令
   private selectCommand(args: string[]) {
-    const sMap = {
-      '1': ['1'],
-      '2': ['2'],
-      '3': ['3'],
-      '4': ['4'],
-      'all': ['1', '2', '3', '4'],
+    const deviceMap: any = {
+      '1': ['motor1'],
+      '2': ['motor2'],
+      '3': ['motor3'],
+      '4': ['motor4'],
+      'all': ['motor1', 'motor2', 'motor3', 'motor4'],
+      'mpu': ['mpu'],
+      'alt': ['alt'],
     };
     if (args.length > 0) {
-      const allNum = args.every((arg) => isFinite(Number(arg)));
-      const allNotNum = args.every((arg) => !isFinite(Number(arg)));
-      if (allNum) {
-
-      } else if (allNotNum) {
-
-      } else {
-        console.log('不可混选设备');
+      const motorRegx = /^[1-4]|all$/;
+      const notMotorRegx = /^mpu|alt$/;
+      const devices: string[] = [];
+      for (let i = 0; i < args.length; ++i) {
+        const arg = args[i];
+        if (motorRegx.test(arg)) {
+          devices.push(...deviceMap[arg]);
+        } else if (notMotorRegx.test(arg)) {
+          devices.push(...deviceMap[arg]);
+          break;
+        } else {
+          console.log(`unknown device ${arg}`);
+        }
       }
+      console.log(devices);
     } else {
       console.log('please select a device');
     }
@@ -62,10 +70,20 @@ export class Console {
     }
   }
 
-  public async Run(): Promise<void> {
+  private welcome(): void {
     console.log(`${'[--------'.green}${` F450 Console v1.1 `.bgGreen.black}${'--------]'.green}`);
+  }
+
+  private async readCommand(): Promise<string> {
+    return (await Console.readline(`${this.curDevice ? `[${this.curDevice}]` : ''}>> `))
+            .trim()
+            .toLowerCase();
+  }
+
+  public async Run(): Promise<void> {
+    this.welcome();
     while (true) {
-      const input = (await Console.readline(`${this.curDevice ? `[${this.curDevice}]` : ''}>> `)).trim().toLowerCase();
+      const input = await this.readCommand();
       if (input) {
         if (
           !input.startsWith('exit') &&
@@ -82,20 +100,5 @@ export class Console {
     }
   }
 
-  /**
-   * Add方法，实现两个number相加
-   * @public
-   * @param {number} num1 - 第一个数字
-   * @param {number} num2 - 第二个数字
-   * @returns {number} 两个数的和
-   * @deprecated 你还是别用这个方法了吧
-   * @author 鸡毛巾 <shihao.gu@perfma.com>
-  */
-  public add(num1: number, num2: number): number {
-    return num1 + num2;
-  }
-
-  public constructor() {
-    const a = this.add
-  }
+  public constructor() {}
 }

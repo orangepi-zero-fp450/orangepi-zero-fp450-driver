@@ -13,7 +13,8 @@ class wiringPiFFI {
    * @returns 安装结果
    */
   public wiringPiSetup(): number {
-    return this.libwiringPi.wiringPiSetup();
+    // return this.libwiringPi.wiringPiSetup();
+    return 0;
   }
   /**
    * 在某一个GPIO口上初始化PWM
@@ -27,7 +28,8 @@ class wiringPiFFI {
     value: number,
     range: number
   ): number {
-    return this.libwiringPi.softPwmCreate(gpio, value, range);
+    // return this.libwiringPi.softPwmCreate(gpio, value, range);
+    return 0;
   }
   /**
    * 设置PWM脉冲宽度
@@ -38,7 +40,7 @@ class wiringPiFFI {
     gpio: GPIO,
     value: number,
   ): void {
-    return this.libwiringPi.softPwmWrite(gpio, value); 
+    // return this.libwiringPi.softPwmWrite(gpio, value);
   }
 
   /**
@@ -47,11 +49,11 @@ class wiringPiFFI {
    * 从 /usr/local/libwiringPi.so 构建 node-ffi 对象
    */
   public constructor() {
-    this.libwiringPi = ffi.Library('libwiringPi', {
-      'wiringPiSetup': ['int', []],
-      'softPwmCreate': ['int', ['int', 'int', 'int']],
-      'softPwmWrite': ['void', ['int', 'int']],
-    });
+    // this.libwiringPi = ffi.Library('libwiringPi', {
+    //   'wiringPiSetup': ['int', []],
+    //   'softPwmCreate': ['int', ['int', 'int', 'int']],
+    //   'softPwmWrite': ['void', ['int', 'int']],
+    // });
   }
 }
 
