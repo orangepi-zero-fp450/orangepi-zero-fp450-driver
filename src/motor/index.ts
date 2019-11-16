@@ -60,7 +60,7 @@ export class Motor {
    * @param max 最大脉冲值
    */
   private pwmInit(min: number = 0, max: number = 200) {
-    console.log(`pwmInit: ${min} ${max}`);
+    console.log(`pwmInit: ${this.gpio} ${min} ${max}`);
     PWM.PWMInit(this.gpio, min, max);
   }
   /**
@@ -73,7 +73,7 @@ export class Motor {
       return;
     }
     // 设置脉冲
-    console.log(`pulseSet: ${value}`);
+    console.log(`pulseSet: ${this.gpio} ${value}`);
     PWM.PWMSet(this.gpio, value);
   }
   /**
