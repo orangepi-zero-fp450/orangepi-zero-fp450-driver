@@ -1,5 +1,5 @@
 import { GPIO } from "../gpio";
-import PWM from '../libpwm';
+import WPIFFI from '../wiringpi-ffi';
 
 /**
  * 电机类
@@ -56,12 +56,12 @@ export class Motor {
 
   /**
    * 调用FFI初始化PWM
-   * @param min 最小脉冲值
-   * @param max 最大脉冲值
+   * @param value 初始化的脉冲宽度值
+   * @param range 脉冲可调范围
    */
-  private pwmInit(min: number = 0, max: number = 200) {
-    console.log(`pwmInit: ${this.gpio} ${min} ${max}`);
-    PWM.PWMInit(this.gpio, min, max);
+  private pwmInit(value: number = 0, range: number = 200) {
+    console.log(`[${this.gpio}] init: ${value} ${range}`);
+    WPIFFI.softPwmCreate(this.gpio, value, range);
   }
   /**
    * 调用FFI设置PWM脉冲
@@ -73,9 +73,10 @@ export class Motor {
       return;
     }
     // 设置脉冲
-    console.log(`pulseSet: ${this.gpio} ${value}`);
-    PWM.PWMSet(this.gpio, value);
+    console.log(`[${this.gpio}] set: ${value}`);
+    WPIFFI.softPwmWrite(this.gpio, value);
   }
+
   /**
    * 初始化PWM，即使能GPIO口的PWM时钟
    * 这里设置时钟为200个单位，即：1s / (200 * 100us) = 50hz
@@ -165,14 +166,21 @@ export class Motor {
    * 设置电机档位并持续一段时间后退回之前的档位
    * @param gear 电机档位，可调范围为[0 ~ 10]
    * @param s 档位保持的时间，单位秒，超出此时间之后档位将会退回到之前的状态
+   * @param keep 是否回退
    */
-  public GearSetTimeout(gear: number, s: number): Promise<void> {
+  public GearSetTimeout(
+    gear: number,
+    s: number,
+    keep: boolean = false,
+  ): Promise<void> {
     return new Promise<void>((resolve) => {
       const ms = Math.floor(s * 1000);
       const bakGear = this.gear;
       this.GearSet(gear);
       setTimeout(() => {
-        this.GearSet(bakGear);
+        if (!keep) {
+          this.GearSet(bakGear);
+        }
         resolve();
       }, ms);
     });
