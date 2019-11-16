@@ -133,10 +133,8 @@ export class Motor {
    * 其次会初始化控制电机的电调并异步等待完成
    */
   public async Init(): Promise<void> {
-    this.pwmInitialized = true;
-    this.controllerInitialized = true;
-    // this.PWMInit();
-    // await this.ControllerInit();
+    this.PWMInit();
+    await this.ControllerInit();
   }
   /**
    * 设置电机档位
