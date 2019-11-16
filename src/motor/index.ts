@@ -167,7 +167,6 @@ export class Motor {
    * @param s 档位保持的时间，单位秒，超出此时间之后档位将会退回到之前的状态
    */
   public GearSetTimeout(gear: number, s: number): Promise<void> {
-    console.log(gear, s);
     return new Promise<void>((resolve) => {
       const ms = Math.floor(s * 1000);
       const bakGear = this.gear;
