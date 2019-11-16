@@ -8,7 +8,10 @@ import PWM from './libpwm';
 async function main() {
   PWM.WiringPiInit();
   const f450 = new F450();
-  await f450.Init();
+  f450.Motor1.PWMInit();
+  f450.Motor2.PWMInit();
+  f450.Motor3.PWMInit();
+  f450.Motor4.PWMInit();
   console.log('所有电机初始化完成');
   await f450.GearSetTimeout(1, 5);
   await f450.GearSetTimeout(2, 4);
