@@ -1,5 +1,6 @@
 import readline from 'readline';
 import 'colors';
+import fs from 'fs';
 import { F450 } from '../f450';
 import { Motor } from '../motor';
 
@@ -138,7 +139,22 @@ export class Console {
   }
 
   private async detailCommand(args: string[]): Promise<void> {
-    
+
+  }
+
+  private async runCommand(args: string[]): Promise<void> {
+    if (args.length > 1) {
+      const filename = args[1];
+      const rows = fs.readFileSync(filename, 'utf-8').split('\n').filter((row) => row);
+      for (let i = 0; i < rows.length; ++i) {
+        const row = rows[i];
+        const substrs = row.split(/\s+/);
+        console.log(row.bgCyan.black);
+        await this.matchCommands(substrs);
+      }
+    } else {
+      console.log('please select a script file');
+    }
   }
 
   // 命令匹配
@@ -150,6 +166,8 @@ export class Console {
       await this.initCommand(substrs.slice(1));
     } else if(cmd === 'detail') {
 
+    } else if (cmd === 'run') {
+      await this.runCommand(substrs);
     } else if (isFinite(Number(cmd))) {
       await this.pulseSetCommand(substrs);
     } else {
