@@ -137,6 +137,10 @@ export class Console {
     }
   }
 
+  private async detailCommand(args: string[]): Promise<void> {
+    
+  }
+
   // 命令匹配
   private async matchCommands(substrs: string[]): Promise<void> {
     const cmd = substrs[0];
@@ -144,6 +148,8 @@ export class Console {
       this.selectCommand(substrs.slice(1));
     } else if (cmd === 'init') {
       await this.initCommand(substrs.slice(1));
+    } else if(cmd === 'detail') {
+
     } else if (isFinite(Number(cmd))) {
       await this.pulseSetCommand(substrs);
     } else {

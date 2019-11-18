@@ -69,7 +69,7 @@ export class Motor {
    */
   private pulseSet(value: number) {
     if (!this.PWMInitialized) {
-      console.log('pwm not initialized');
+      console.log(`[${this.gpio}] pwm not initialized`);
       return;
     }
     // 设置脉冲
@@ -86,7 +86,7 @@ export class Motor {
       this.pwmInitialized = true;
       this.pwmInit(0, 200);
     } else {
-      console.log('pwm already initialized');
+      console.log(`[${this.gpio}] pwm already initialized`);
     }
   }
   /**
@@ -122,7 +122,7 @@ export class Motor {
           }, 7000);
         }, 3000);
       } else {
-        console.log('controller already initialized');
+        console.log(`[${this.gpio}] controller already initialized`);
         resolve();
       }
     });
@@ -143,15 +143,15 @@ export class Motor {
    */
   public GearSet(gear: number): void {
     if (!this.PWMInitialized) {
-      console.log('pwm not initialized');
+      console.log(`[${this.gpio}] pwm not initialized`);
       return;
     }
     if (!this.ControllerInitialized) {
-      console.log('controller not initialized');
+      console.log(`[${this.gpio}] controller not initialized`);
       return;
     }
     if (gear < 0 || gear > 10) {
-      console.log('the range of gear must be [0 ~ 10]');
+      console.log(`[${this.gpio}] the range of gear must be [0 ~ 10]`);
       return;
     }
     const floorGear = Math.floor(gear);
@@ -184,6 +184,15 @@ export class Motor {
         resolve();
       }, ms);
     });
+  }
+  /**
+   * 在控制台显示设备的详情
+   */
+  public Detail(): void {
+    console.log(`GPIO: ${this.GPIO}`);
+    console.log(`PWMInitialized[true / false]: ${this.PWMInitialized}`);
+    console.log(`ControllerInitialized[true / false]: ${this.ControllerInitialized}`);
+    console.log(`Gear[0 ~ 10]: ${this.Gear}`);
   }
   /**
    * @constructor 构造函数，创建一个可用的电机对象
