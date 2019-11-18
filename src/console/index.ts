@@ -1,5 +1,6 @@
 import readline from 'readline';
 import 'colors';
+import { F450 } from '../f450';
 
 export class Console {
   // readline模块
@@ -16,70 +17,141 @@ export class Console {
     });
   }
 
+  private static f450: F450 = new F450();
+
   // 当前Select的设备
-  private curDevice: string = '';
+  private curDevices: string[] = [];
 
   // 脉冲设置命令
-  private pulseSetCommand(value: number) {
+  private pulseSetCommand(args: string[]) {
     
   }
 
   // 选择设备命令
-  private selectCommand(args: string[]) {
-    const deviceMap: any = {
-      '1': ['motor1'],
-      '2': ['motor2'],
-      '3': ['motor3'],
-      '4': ['motor4'],
-      'all': ['motor1', 'motor2', 'motor3', 'motor4'],
+  private selectCommand(args: string[]): void {
+    // 设备名称字典
+    const deviceDict: any = {
+      '1': ['m1'],
+      '2': ['m2'],
+      '3': ['m3'],
+      '4': ['m4'],
+      'all': ['m1', 'm2', 'm3', 'm4'],
       'mpu': ['mpu'],
       'alt': ['alt'],
     };
     if (args.length > 0) {
-      const motorRegx = /^[1-4]|all$/;
-      const notMotorRegx = /^mpu|alt$/;
+      const mtrRegx = /^[1-4]|all$/;
+      const devRegx = /^mpu|alt$/;
       const devices: string[] = [];
-      for (let i = 0; i < args.length; ++i) {
+      let i = 0;
+      for (; i < args.length; ++i) {
         const arg = args[i];
-        if (motorRegx.test(arg)) {
-          devices.push(...deviceMap[arg]);
-        } else if (notMotorRegx.test(arg)) {
-          devices.push(...deviceMap[arg]);
+        if (mtrRegx.test(arg)) {
+          devices.push(...deviceDict[arg]);
+        } else if (devRegx.test(arg)) {
+          if (i > 0 && !devRegx.test(args[i - 1])) {
+            console.log(`can't mix the motor device and other device ${arg}`);
+            return;
+          } else {
+            devices.push(...deviceDict[arg]);
+          }
+          i++;
           break;
         } else {
           console.log(`unknown device ${arg}`);
+          return;
         }
       }
-      console.log(devices);
+      // 参数多余提示
+      if (i < args.length) {
+        const reduArgs = args.slice(i);
+        console.log(`redundant args: ${reduArgs.join(' ')}`);
+      }
+      const devicesSet = new Set(devices);
+      this.curDevices = Array.from(devicesSet);
     } else {
       console.log('please select a device');
     }
   }
 
+  // 初始化设备命令
+  private async initCommand(args: string[]): Promise<void> {
+    if (this.curDevices.length > 0) {
+      await Promise.all(this.curDevices.map((dev) => {
+        if (dev === 'm1') {
+          return Console.f450.Motor1.Init();
+        } else if (dev === 'm2') {
+          return Console.f450.Motor2.Init();
+        } else if (dev === 'm3') {
+          return Console.f450.Motor3.Init();   
+        } else if (dev === 'm4') {
+          return Console.f450.Motor4.Init();
+        } else {
+          return new Promise<void>((resolve) => { resolve() });
+        }
+      }));
+    } else {
+      console.log('no device is currently selected');
+    }
+  }
+
   // 命令匹配
-  private matchCommands(substrs: string[]) {
+  private async matchCommands(substrs: string[]): Promise<void> {
     const cmd = substrs[0];
     if (cmd === 'select') {
       this.selectCommand(substrs.slice(1));
     } else if (cmd === 'init') {
-
+      await this.initCommand(substrs.slice(1));
     } else if (isFinite(Number(cmd))) {
-      this.pulseSetCommand(Math.floor(Number(cmd)));
+      this.pulseSetCommand(substrs);
     } else {
       console.log('unknown command');
     }
   }
-
+  /**
+   * 显示欢迎信息
+   */
   private welcome(): void {
     console.log(`${'[--------'.green}${` F450 Console v1.1 `.bgGreen.black}${'--------]'.green}`);
   }
-
+  /**
+   * 读取命令行输入（带状态提示）
+   */
   private async readCommand(): Promise<string> {
-    return (await Console.readline(`${this.curDevice ? `[${this.curDevice}]` : ''}>> `))
+    const colorDict: any = {
+      m1: {
+        bgColor: 'bgGreen',
+        color: 'black',
+      },
+      m2: {
+        bgColor: 'bgGreen',
+        color: 'black',
+      },
+      m3: {
+        bgColor: 'bgGreen',
+        color: 'black',
+      },
+      m4: {
+        bgColor: 'bgGreen',
+        color: 'black',
+      },
+      mpu: {
+        bgColor: 'bgCyan',
+        color: 'black',
+      },
+      alt: {
+        bgColor: 'bgYellow',
+        color: 'black',
+      },
+    };
+    const tips = `${this.curDevices.length > 0 ? this.curDevices.map((dev) => ` ${dev} `[colorDict[dev].bgColor][colorDict[dev].color]).join('.') + ' ' : ''}>> `;
+    return (await Console.readline(tips))
             .trim()
             .toLowerCase();
   }
-
+  /**
+   * 运行控制台
+   */
   public async Run(): Promise<void> {
     this.welcome();
     while (true) {
@@ -92,13 +164,16 @@ export class Console {
           input !== 'q'
         ) {
           const substrs = input.split(/\s+/);
-          this.matchCommands(substrs);
+          await this.matchCommands(substrs);
         } else {
           break;
         }
       }
     }
   }
-
+  /**
+   * @constructor
+   * 构造函数
+   */
   public constructor() {}
 }
