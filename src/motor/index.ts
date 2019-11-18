@@ -68,7 +68,7 @@ export class Motor {
    * @param value 脉冲值，默认配置下，此值的范围为[0 ~ 200]
    */
   private pulseSet(value: number) {
-    if (!this.PWMInit) {
+    if (!this.PWMInitialized) {
       console.log('pwm not initialized');
       return;
     }
@@ -142,11 +142,11 @@ export class Motor {
    * @param gear 电机档位，可调范围为[0 ~ 10]
    */
   public GearSet(gear: number): void {
-    if (!this.PWMInit) {
+    if (!this.PWMInitialized) {
       console.log('pwm not initialized');
       return;
     }
-    if (!this.ControllerInit) {
+    if (!this.ControllerInitialized) {
       console.log('controller not initialized');
       return;
     }

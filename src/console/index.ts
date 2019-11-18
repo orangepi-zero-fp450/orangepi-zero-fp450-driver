@@ -1,6 +1,7 @@
 import readline from 'readline';
 import 'colors';
 import { F450 } from '../f450';
+import { Motor } from '../motor';
 
 export class Console {
   // readline模块
@@ -22,12 +23,51 @@ export class Console {
   // 当前Select的设备
   private curDevices: string[] = [];
 
-  // 脉冲设置命令
-  private pulseSetCommand(args: string[]) {
-    
+  /**
+   * 根据Motor设备名列表组合Motor设备列表
+   * @param strs Motor设备名列表
+   */
+  private namesToMotors(strs: string[]): Motor[] {
+    return strs.map((str) => (Console.f450 as any)[`Motor${str.replace('m', '')}`] as Motor);
   }
 
-  // 选择设备命令
+  /**
+   * 脉冲设置命令
+   * @param args 参数列表
+   */
+  private async pulseSetCommand(args: string[]): Promise<void> {
+    if (this.curDevices.length > 0) {
+      const mtrRegx = /^m[1-4]$/;
+      if (this.curDevices.every((dev) => mtrRegx.test(dev))) {
+        // 档位值
+        const value = Math.floor(Number(args[0]));
+        // 当前选中的电机列表
+        const motors = this.namesToMotors(this.curDevices);
+        if (args.length < 2) {
+          motors.forEach((motor) => motor.GearSet(value));
+        } else {
+          let timelen = Number(args[1]);
+          if (isFinite(timelen) && timelen >= 0) {
+            if (args.length > 3) {
+              console.log(`redundant args: ${args.slice(3).join(' ')}`);
+            }
+            await Promise.all(motors.map((motor) => motor.GearSetTimeout(value, timelen, args[2] === 'k')));
+          } else {
+            console.log(`illegal param timelen ${args[1]}`);
+          }
+        }
+      } else {
+        console.log('only motor devices are supported');
+      }
+    } else {
+      console.log('please select motor');
+    }
+  }
+
+  /**
+   * 设备选择命令
+   * @param args 参数列表
+   */
   private selectCommand(args: string[]): void {
     // 设备名称字典
     const deviceDict: any = {
@@ -73,8 +113,10 @@ export class Console {
       console.log('please select a device');
     }
   }
-
-  // 初始化设备命令
+  /**
+   * 设备初始化命令
+   * @param args 参数列表
+   */
   private async initCommand(args: string[]): Promise<void> {
     if (this.curDevices.length > 0) {
       await Promise.all(this.curDevices.map((dev) => {
@@ -103,7 +145,7 @@ export class Console {
     } else if (cmd === 'init') {
       await this.initCommand(substrs.slice(1));
     } else if (isFinite(Number(cmd))) {
-      this.pulseSetCommand(substrs);
+      await this.pulseSetCommand(substrs);
     } else {
       console.log('unknown command');
     }
