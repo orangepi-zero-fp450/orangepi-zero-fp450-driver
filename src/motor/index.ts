@@ -1,4 +1,4 @@
-import { GPIO } from "../gpio";
+import { GPIO } from '../gpio';
 import WPIFFI from '../wiringpi-ffi';
 
 /**
