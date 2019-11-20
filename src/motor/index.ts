@@ -186,12 +186,12 @@ export class Motor {
     });
   }
   /**
-   * 在控制台显示设备的详情
+   * 在控制台输出设备的详情信息
    */
   public Detail(): void {
     console.log(`GPIO: ${this.GPIO}`);
-    console.log(`PWMInitialized[true / false]: ${this.PWMInitialized}`);
-    console.log(`ControllerInitialized[true / false]: ${this.ControllerInitialized}`);
+    console.log(`PWMInitialized[true/false]: ${this.PWMInitialized}`);
+    console.log(`ControllerInitialized[true/false]: ${this.ControllerInitialized}`);
     console.log(`Gear[0 ~ 10]: ${this.Gear}`);
   }
   /**

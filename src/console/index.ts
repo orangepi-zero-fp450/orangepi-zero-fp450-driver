@@ -143,17 +143,17 @@ export class Console {
   }
 
   private async runCommand(args: string[]): Promise<void> {
-    if (args.length > 1) {
-      const filename = args[1];
+    if (args.length > 0) {
+      const filename = args[0];
       const rows = fs.readFileSync(filename, 'utf-8').split('\n').filter((row) => row);
       for (let i = 0; i < rows.length; ++i) {
         const row = rows[i];
         const substrs = row.split(/\s+/);
-        console.log(row.bgCyan.black);
+        console.log('<< ' + ` ${row} `.bgCyan.black);
         await this.matchCommands(substrs);
       }
     } else {
-      console.log('please select a script file');
+      console.log('please input a script file');
     }
   }
 
@@ -167,7 +167,7 @@ export class Console {
     } else if(cmd === 'detail') {
 
     } else if (cmd === 'run') {
-      await this.runCommand(substrs);
+      await this.runCommand(substrs.slice(1));
     } else if (isFinite(Number(cmd))) {
       await this.pulseSetCommand(substrs);
     } else {
@@ -178,10 +178,10 @@ export class Console {
    * 显示欢迎信息
    */
   private welcome(): void {
-    console.log(`${'[--------'.green}${` F450 Console v1.1 `.bgGreen.black}${'--------]'.green}`);
+    console.log(`${'[----------'.green}${` F450 Console v1.1 `.bgGreen.black}${'----------]'.green}`);
   }
   /**
-   * 读取命令行输入（带状态提示）
+   * 读取命令行输入（带选中设备提示）
    */
   private async readCommand(): Promise<string> {
     const colorDict: any = {
