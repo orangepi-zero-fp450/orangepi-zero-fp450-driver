@@ -61,7 +61,9 @@ export class Motor {
    */
   private pwmInit(value: number = 0, range: number = 200) {
     console.log(`[${this.gpio}] init: ${value} ${range}`);
-    WPIFFI.softPwmCreate(this.gpio, value, range);
+    if (WPIFFI.softPwmCreate(this.gpio, value, range)) {
+      throw(new Error(`[${this.gpio}] pwm initialization failed`));
+    }
   }
   /**
    * 调用FFI设置PWM脉冲
@@ -105,7 +107,7 @@ export class Motor {
     return new Promise<void>((resolve, reject) => {
       // 如果PWM没有初始化则报错
       if (!this.PWMInitialized) {
-        reject('pwm not initialized');
+        reject(`[${this.gpio}] pwm not initialized`);
       }
       // 如果电调并未初始化
       if (!this.ControllerInitialized) {
